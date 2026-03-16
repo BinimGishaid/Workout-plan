@@ -2,7 +2,7 @@
   "name": "Binim Workout Pro",
   "short_name": "אימוני בינים",
   "description": "תוכנית היפרטרופיה ועיצוב חזה - מרץ 2026",
-  "start_url": "workout.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#8b5cf6",
