@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#8b5cf6">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Workout Pro - Binim</title>
+    <style>
+        :root { --p:#8b5cf6; --bg:#0f172a; --c:#1e293b; --t:#f8fafc; --m:#94a3b8; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--t); margin: 0; padding: 15px; }
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 12px; border: none; border-radius: 10px; background: #334155; color: white; font-weight: bold; }
+        .tab.active { background: var(--p); box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); }
+        .card { background: var(--c); border-radius: 18px; padding: 18px; border: 1px solid #334155; }
+        .ex-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #334155; }
+        .ex-info { flex: 1; }
+        .ex-name { font-weight: bold; border: none; background: transparent; color: white; font-size: 1rem; width: 100%; }
+        .ex-meta { font-size: 0.8rem; color: var(--m); margin-top: 5px; }
+        .ex-meta input { background: #ffffff10; border: 1px solid #334155; color: var(--p); width: 30px; text-align: center; border-radius: 4px; }
+        .st-btn { width: 45px; height: 45px; border-radius: 12px; border: 2px solid #334155; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; }
+        .v { background: #10b981; border-color: #10b981; color: white; }
+        .x { background: #ef4444; border-color: #ef4444; color: white; }
+        .footer { position: sticky; bottom: 15px; display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .main-btn { padding: 18px; background: var(--p); color: white; border: none; border-radius: 15px; font-weight: bold; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+
+
+
+    <div style="text-align: center; margin-bottom: 15px;">
+        <h2 style="margin:0; color:var(--p);">Binim Workout Pro</h2>
+        <div id="status-check" style="font-size: 0.7rem; color: #10b981;">● המערכת פעילה</div>
+    </div>
+
+
+
+
+    <div class="tabs">
+        <button class="tab active" onclick="chTab('A')">A</button>
+        <button class="tab" onclick="chTab('B')">B</button>
+        <button class="tab" onclick="chTab('C')">C</button>
+        <button class="tab" onclick="chTab('D')">D</button>
+    </div>
+
+
+
+
+    <div id="main-content"></div>
+
+
+
+
+    <div class="footer">
+        <button class="main-btn" onclick="doExport()">סיום ושמירת אימון (CSV)</button>
+        <button style="background:none; border:none; color:var(--m);" onclick="resetAll()">איפוס סימונים</button>
+    </div>
+
+
+
+
+<script>
+    const data = {
+        'A': { t: 'חזה וכתפיים', l: [
+            { n: 'לחיצה עליון משקולות #7', s: 3, r: 15, note: 'חזה עליון' },
+            { n: 'לחיצת חזה (מכונה) #3', s: 3, r: 12, note: '' },
+            { n: 'פרפר חזה מכונה #6', s: 3, r: 15, note: '' },
+            { n: 'לחיצת כתפיים (מכונה) #1', s: 3, r: 10, note: '' },
+            { n: 'הרחקות לצדדים לכתף #6', s: 3, r: 12, note: '' }
+        ]},
+        'B': { t: 'רגליים וגב', l: [
+            { n: 'סקוואט #1', s: 3, r: 10, note: '' },
+            { n: 'משיכת גב פולי עליון #2', s: 3, r: 10, note: '' },
+            { n: 'חתירה בישיבה (מכונה) #4', s: 3, r: 12, note: '' },
+            { n: 'כפיפת ברכיים #4', s: 3, r: 15, note: '' },
+            { n: 'פשיטת ברכיים #3', s: 3, r: 15, note: '' }
+        ]},
+        'C': { t: 'חזה ויד אחורית', l: [
+            { n: 'לחיצה עליון משקולות #7', s: 3, r: 15, note: 'חזה עליון' },
+            { n: 'לחיצת חזה (מכונה) #3', s: 3, r: 12, note: '' },
+            { n: 'פרפר חזה מכונה #6', s: 3, r: 15, note: '' },
+            { n: 'יד אחורית משולש #3', s: 3, r: 12, note: '' },
+            { n: 'לחיצה צרפתית #4', s: 3, r: 12, note: '' },
+            { n: 'בטן #6', s: 3, r: 15, note: '' }
+        ]},
+        'D': { t: 'גב וידיים', l: [
+            { n: 'סקוואט #1', s: 3, r: 10, note: '' },
+            { n: 'פולי עליון רחב #7', s: 3, r: 12, note: '' },
+            { n: 'פשיטת גב #5', s: 3, r: 15, note: '' },
+            { n: 'פרפר כתף אחורית #3', s: 3, r: 15, note: '' },
+            { n: 'יד קדמית משקולות #5', s: 3, r: 12, note: '' }
+        ]}
+    };
+
+
+
+
+    let cur = JSON.parse(localStorage.getItem('b_work_v4')) || data;
+    let active = 'A';
+
+
+
+
+    function save() { localStorage.setItem('b_work_v4', JSON.stringify(cur)); }
+
+
+
+
+    function draw() {
+        const cont = document.getElementById('main-content');
+        const workout = cur[active];
+        let h = `<div class="card"><h3>אימון ${active}: ${workout.t}</h3>`;
+        workout.l.forEach((ex, i) => {
+            const cls = ex.st === 'v' ? 'v' : (ex.st === 'x' ? 'x' : '');
+            const icon = ex.st === 'v' ? '✓' : (ex.st === 'x' ? '✕' : '');
+            h += `
+                <div class="ex-row">
+                    <div class="ex-info">
+                        <input type="text" class="ex-name" value="${ex.n}" onchange="upd(${i},'n',this.value)">
+                        <div class="ex-meta">
+                            <input type="number" value="${ex.s}" onchange="upd(${i},'s',this.value)"> סטים | 
+                            <input type="number" value="${ex.r}" onchange="upd(${i},'r',this.value)"> חזרות | 
+                            <input type="text" style="width:60px" value="${ex.note||''}" placeholder="הערה" onchange="upd(${i},'note',this.value)">
+                        </div>
+                    </div>
+                    <div class="st-btn ${cls}" onclick="tgl(${i})">${icon}</div>
+                </div>`;
+        });
+        h += `<button style="width:100%; margin-top:10px; background:none; border:1px dashed #334155; color:var(--m); padding:10px; border-radius:10px;" onclick="add()">+ הוספת תרגיל</button></div>`;
+        cont.innerHTML = h;
+    }
+
+
+
+
+    function upd(i,f,v) { cur[active].l[i][f]=v; save(); }
+    function tgl(i) { 
+        let ex = cur[active].l[i];
+        if(!ex.st) ex.st='v'; else if(ex.st==='v') ex.st='x'; else delete ex.st;
+        save(); draw();
+    }
+    function chTab(k) { active=k; document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.innerText===k)); draw(); }
+    function add() { cur[active].l.push({n:'תרגיל חדש', s:3, r:12}); save(); draw(); }
+    function resetAll() { if(confirm('לאפס הכל?')) { Object.keys(cur).forEach(k=>cur[k].l.forEach(e=>delete e.st)); save(); draw(); } }
+
+
+
+
+    function doExport() {
+        const now = new Date();
+        const timeStr = now.toLocaleString('he-IL').replace(/[/:]/g, '-');
+        let csv = `סיכום אימון בינים - ${now.toLocaleString('he-IL')}\nאימון: ${active}\n\nסטטוס,תרגיל,סטים,חזרות,הערה\n`;
+        cur[active].l.forEach(ex => {
+            csv += `${ex.st||'-'},${ex.n},${ex.s},${ex.r},${ex.note||''}\n`;
+        });
+        const blob = new Blob(["\ufeff" + csv], {type: 'text/csv;charset=utf-8;'});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Workout_${active}_${timeStr}.csv`;
+        link.click();
+    }
+
+
+
+
+    draw();
+</script>
+</body>
+</html>
